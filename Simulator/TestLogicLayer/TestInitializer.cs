@@ -11,7 +11,7 @@ public class TestInitializer
 {
 
     [Fact]
-    public void TestInit()
+    public void TestInitFactory()
     {
         Factory f = new Factory();
         Initializer.InitFactory(f);
@@ -33,5 +33,16 @@ public class TestInitializer
         // Assert
         Assert.NotNull(car);
         Assert.IsType<Car>(car);
+    }
+
+    [Fact]
+    public void TestInitClient()
+    {
+        ClientService clientService = new ClientService();
+        Initializer.InitClient(clientService);
+
+        Assert.Equal(0, clientService.GetAskFor("bike"));
+        Assert.Equal(0, clientService.GetAskFor("scooter"));
+        Assert.Equal(0, clientService.GetAskFor("car"));
     }
 }

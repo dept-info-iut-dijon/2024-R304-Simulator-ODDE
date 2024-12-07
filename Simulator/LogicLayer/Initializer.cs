@@ -15,4 +15,17 @@ public class Initializer
         f.RegisterFactory("scooter", new ScooterFactory());
         f.RegisterFactory("car", new CarFactory());
     }
+
+    public static void InitClient(ClientService service)
+    {
+        Dictionary<string, int> vehicules = new();
+        vehicules["bike"] = 20;
+        vehicules["scooter"] = 14;
+        vehicules["car"] = 10;
+        foreach(string v in vehicules.Keys)
+        {
+            service.InitNeeds(v, 0);
+            service.InitProbs(v, vehicules[v]);
+        }
+    }
 }

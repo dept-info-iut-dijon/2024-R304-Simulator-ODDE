@@ -86,6 +86,7 @@
             workshop = new Workshop(parameters.TimeSlice);
             stock = new Stock(parameters.MaxStock);
             clients = new ClientService();
+            Initializer.InitClient(clients);
             factory = new Factory();
             Initializer.InitFactory(factory);
         }

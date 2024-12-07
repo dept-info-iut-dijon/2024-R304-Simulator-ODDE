@@ -9,18 +9,37 @@ namespace LogicLayer
     /// <summary>
     /// Part of company, who deal with clients needs
     /// </summary>
-    internal class ClientService
+    public class ClientService
     {
         private Random r;
         private Dictionary<string, int> needs;
+        private Dictionary<string, int> probs;
 
         public ClientService()
         {
             needs = new Dictionary<string, int>();
+            probs = new Dictionary<string, int>();
             r = new Random();
-            needs["bike"] = 0;
-            needs["car"] = 0;
-            needs["scooter"] = 0;
+        }
+
+        /// <summary>
+        /// Init the need of product
+        /// </summary>
+        /// <param name="type">product</param>
+        /// <param name="need">need od product</param>
+        public void InitNeeds(string type, int need)
+        {
+            needs[type] = need;
+        }
+
+        /// <summary>
+        /// Init the probs of product
+        /// </summary>
+        /// <param name="type">product</param>
+        /// <param name="prob">prob of product</param>
+        public void InitProbs(string type, int prob)
+        {
+            probs[type] = prob;
         }
         private int ProbaToClients(int proba)
         {

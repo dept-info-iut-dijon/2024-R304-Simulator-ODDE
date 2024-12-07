@@ -63,7 +63,11 @@
         /// </summary>
         public int TotalStock { get => stock.TotalStock; }
 
-
+        /// <summary>
+        /// Get the factory
+        /// </summary>
+        public Factory Factory { get => factory; }
+        private Factory factory;
         #endregion
 
         #region Constructors
@@ -82,6 +86,9 @@
             workshop = new Workshop(parameters.TimeSlice);
             stock = new Stock(parameters.MaxStock);
             clients = new ClientService();
+            Initializer.InitClient(clients);
+            factory = new Factory();
+            Initializer.InitFactory(factory);
         }
         #endregion
 
@@ -134,21 +141,7 @@
         /// <exception cref="NoEmployee">Not enough employee to build</exception>
         public void MakeProduct(string type)
         {
-            Product p;
-            switch(type)
-            {
-                case "bike":
-                    p = new Products.Bike();
-                    break;
-                case "scooter":
-                    p = new Products.Scooter();
-                    break;
-                case "car":
-                    p = new Products.Car();
-                    break;
-                default:
-                    throw new ProductUnknown();
-            }
+            Product p = factory.Create(type).CreateProduct();
             // test if the product can be build
             if (materials < p.MaterialsNeeded)
                 throw new NotEnoughMaterials();

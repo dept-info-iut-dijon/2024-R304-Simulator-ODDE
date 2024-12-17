@@ -1,9 +1,11 @@
-﻿namespace LogicLayer
+﻿using LogicLayer.Observer;
+
+namespace LogicLayer
 {
     /// <summary>
     /// Enterprise simulation
     /// </summary>
-    public class Enterprise : IDisposable
+    public class Enterprise : Subject, IDisposable
     {
         #region associations
         private Workshop workshop;
@@ -81,7 +83,7 @@
         /// <summary>
         /// Initialize the enterprise
         /// </summary>
-        public Enterprise(Parameters? parameters = null)
+        public Enterprise(Parameters? parameters = null) : base()
         {
             if(parameters == null)
                 parameters = new Parameters();
@@ -111,6 +113,7 @@
             if (money < cost)
                 throw new NotEnoughMoney();
             money -= cost;
+            Notify();
             materials += parameters.Materials;
         }
 
@@ -208,6 +211,7 @@
             if (cost > money)
                 throw new NotEnoughMoney();
             money -= cost;
+            Notify();
         }
 
         /// <summary>
@@ -236,6 +240,7 @@
             {
                 stock.Remove(p);
                 money += p.Price;
+                Notify();
                 clients.Buy(type);
             }
         }
@@ -264,6 +269,10 @@
             PayEmployees();
         }
 
+        private void Notify()
+        {
+            base.NotifyMoneyChange(money);
+        }
 
         public void Dispose()
         {

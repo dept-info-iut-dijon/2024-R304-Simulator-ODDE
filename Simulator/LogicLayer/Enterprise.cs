@@ -3,7 +3,7 @@
     /// <summary>
     /// Enterprise simulation
     /// </summary>
-    public class Enterprise
+    public class Enterprise : IDisposable
     {
         #region associations
         private Workshop workshop;
@@ -68,6 +68,12 @@
         /// </summary>
         public Factory Factory { get => factory; }
         private Factory factory;
+
+        /// <summary>
+        /// Get the timer
+        /// </summary>
+        public System.Threading.Timer Timer { get => Timer; }
+        private System.Threading.Timer timer;
         #endregion
 
         #region Constructors
@@ -89,6 +95,8 @@
             Initializer.InitClient(clients);
             factory = new Factory();
             Initializer.InitFactory(factory);
+            timer = new Timer(EndOfMonth);
+            timer.Change(0, MonthTime);
         }
         #endregion
 
@@ -249,6 +257,17 @@
         public int GetAskClients(string type)
         {
             return clients.GetAskFor(type);
+        }
+
+        private void EndOfMonth(object? state)
+        {
+            PayEmployees();
+        }
+
+
+        public void Dispose()
+        {
+            timer.Dispose();
         }
         #endregion
 

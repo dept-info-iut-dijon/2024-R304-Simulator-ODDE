@@ -90,10 +90,6 @@ namespace Simulator
             enterprise.UpdateProductions();
             enterprise.UpdateBuying();
             
-            totalStock.Content = enterprise.TotalStock.ToString()+" %";
-            materials.Content = enterprise.Materials.ToString();
-            employees.Content = enterprise.FreeEmployees.ToString()+"/"+enterprise.Employees.ToString();
-
             bikesProd.Content = enterprise.GetProduction("bike").ToString();
             scootsProd.Content = enterprise.GetProduction("scooter").ToString();
             carsProd.Content = enterprise.GetProduction("car").ToString();
@@ -206,6 +202,30 @@ namespace Simulator
             App.Current.Dispatcher.Invoke(() =>
             {
                 this.money.Content = money.ToString("C");
+            });
+        }
+
+        public void StockChange(int stock)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                totalStock.Content = stock.ToString() + " %";
+            });
+        }
+
+        public void MaterialChange(int material)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                materials.Content = material.ToString();
+            });
+        }
+
+        public void EmployeesChange(int free, int total)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                employees.Content = free.ToString() + "/" + total.ToString();
             });
         }
     }

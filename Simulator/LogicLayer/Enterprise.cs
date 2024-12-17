@@ -99,6 +99,7 @@ namespace LogicLayer
             Initializer.InitFactory(factory);
             timer = new Timer(EndOfMonth);
             timer.Change(0, MonthTime);
+            Notify();
         }
         #endregion
 
@@ -113,8 +114,8 @@ namespace LogicLayer
             if (money < cost)
                 throw new NotEnoughMoney();
             money -= cost;
-            Notify();
             materials += parameters.Materials;
+            Notify();
         }
 
         /// <summary>
@@ -123,6 +124,7 @@ namespace LogicLayer
         public void Hire()
         {
             ++employees;
+            Notify();
         }
 
         /// <summary>
@@ -141,6 +143,7 @@ namespace LogicLayer
                 throw new EmployeeWorking();
             money -= cost;
             employees--;
+            Notify();
         }
 
         /// <summary>
@@ -160,6 +163,7 @@ namespace LogicLayer
                 throw new NoEmployee();
 
             materials -= p.MaterialsNeeded; // consume materials
+            Notify();
             // start the building...
             workshop.StartProduction(p);
         }
@@ -178,7 +182,7 @@ namespace LogicLayer
                 stock.Add(product);
                 workshop.Remove(product);
             }
-
+            Notify();
         }
 
         /// <summary>
@@ -272,6 +276,9 @@ namespace LogicLayer
         private void Notify()
         {
             base.NotifyMoneyChange(money);
+            base.NotifyStockChange(stock.TotalStock);
+            base.NotifyMaterialChange(materials);
+            base.NotifyEmployeesChange(FreeEmployees, employees);
         }
 
         public void Dispose()

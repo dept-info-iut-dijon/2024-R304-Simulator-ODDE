@@ -16,6 +16,31 @@ public class Subject
             observable.MoneyChange(money);
         }
     }
+    
+    protected void NotifyMaterialChange(int material)
+    {
+        foreach (IObserver observable in observers)
+        {
+            observable.MaterialChange(material);
+        }
+    }
+    
+    protected void NotifyStockChange(int stock)
+    {
+        foreach (IObserver observable in observers)
+        {
+            observable.StockChange(stock);
+        }
+    }
+
+
+    protected void NotifyEmployeesChange(int free, int total)
+    {
+        foreach (IObserver observable in observers)
+        {
+            observable.EmployeesChange(free, total);
+        }
+    }
 
     /// <summary>
     /// Registe an observer

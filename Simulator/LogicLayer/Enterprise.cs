@@ -1,11 +1,12 @@
 ﻿using LogicLayer.Observer;
+using System.Diagnostics;
 
 namespace LogicLayer
 {
     /// <summary>
     /// Enterprise simulation
     /// </summary>
-    public class Enterprise : Subject, IDisposable
+    public class Enterprise : Subject, IDisposable, IObserver
     {
         #region associations
         private Workshop workshop;
@@ -94,6 +95,7 @@ namespace LogicLayer
             workshop = new Workshop(parameters.TimeSlice);
             stock = new Stock(parameters.MaxStock);
             clients = new ClientService();
+            clients.Register(this);
             Initializer.InitClient(clients);
             factory = new Factory();
             Initializer.InitFactory(factory);
@@ -244,8 +246,8 @@ namespace LogicLayer
             {
                 stock.Remove(p);
                 money += p.Price;
-                Notify();
                 clients.Buy(type);
+                Notify();
             }
         }
 
@@ -256,17 +258,7 @@ namespace LogicLayer
         {            
             clients.UpdateClients();
         }
-
-        /// <summary>
-        /// Init the need of product
-        /// </summary>
-        /// <param name="type">product</param>
-        /// <param name="need">need od product</param>
-        public void InitNeeds(string type, int need)
-        {
-            clients.InitNeeds(type, need);
-        }
-
+        
         /// <summary>
         /// Get clients needs
         /// </summary>
@@ -281,19 +273,48 @@ namespace LogicLayer
         private void EndOfMonth(object? state)
         {
             PayEmployees();
+            UpdateClients();
         }
 
         private void Notify()
         {
-            base.NotifyMoneyChange(money);
-            base.NotifyStockChange(stock.TotalStock);
-            base.NotifyMaterialChange(materials);
-            base.NotifyEmployeesChange(FreeEmployees, employees);
+            MoneyChange(money);
+            StockChange(stock.TotalStock);
+            MaterialChange(materials);
+            EmployeesChange(FreeEmployees, employees);
+            ClientNeedsChange("bike", clients.GetAskFor("bike"));
+            ClientNeedsChange("scooter", clients.GetAskFor("scooter"));
+            ClientNeedsChange("car", clients.GetAskFor("car"));
         }
 
         public void Dispose()
         {
             timer.Dispose();
+        }
+
+        public void MoneyChange(int money)
+        {
+            base.NotifyMoneyChange(money);
+        }
+
+        public void StockChange(int stock)
+        {
+            base.NotifyStockChange(stock);
+        }
+
+        public void MaterialChange(int material)
+        {
+            base.NotifyMaterialChange(material);
+        }
+
+        public void EmployeesChange(int free, int total)
+        {
+            base.NotifyEmployeesChange(FreeEmployees, employees);
+        }
+
+        public void ClientNeedsChange(string type, int need)
+        {
+            base.NotifyNeedsChange(type, need);
         }
         #endregion
 

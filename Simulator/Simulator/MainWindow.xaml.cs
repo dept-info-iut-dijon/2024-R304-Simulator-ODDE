@@ -24,7 +24,7 @@ namespace Simulator
     {
         private LogicLayer.Enterprise enterprise;
         private Timer timerSecond;
-        private Timer timerMonth;
+        //private Timer timerMonth;
         private Timer timerWeek;
         public MainWindow()
         {
@@ -33,8 +33,6 @@ namespace Simulator
             DataContext = enterprise;
             timerSecond = new Timer(TimerSecondTick);
             timerSecond.Change(0, enterprise.TimeSlice); 
-            timerMonth = new Timer(TimerMonthTick);
-            timerMonth.Change(0, enterprise.MonthTime);
             timerWeek = new Timer(TimerWeekTick);
             timerWeek.Change(0, enterprise.WeekTime);
             enterprise.Register(this);
@@ -45,7 +43,8 @@ namespace Simulator
             Dispatcher.Invoke(() =>
             {
                 // every second, to update screen
-                UpdateScreen();
+                enterprise.UpdateProductions();
+                enterprise.UpdateBuying();
             });
             
         }
@@ -57,27 +56,7 @@ namespace Simulator
                 // nothing to do every week...
             });
         }
-
-        private void TimerMonthTick(object? data)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                try
-                {
-                    enterprise.UpdateClients();
-                }
-                catch (LogicLayer.NotEnoughMoney)
-                {
-                    timerSecond.Dispose();
-                    timerMonth.Dispose();
-
-                    MessageBox.Show("Not enough money to pay employees !");
-                    EndOfSimulation();
-                }
-            });
-            
-            
-        }
+        
 
         private void EndOfSimulation()
         {
@@ -87,8 +66,7 @@ namespace Simulator
 
         private void UpdateScreen()
         {
-            enterprise.UpdateProductions();
-            enterprise.UpdateBuying();
+
         }
 
         private void BuyMaterials(object sender, RoutedEventArgs e)
@@ -198,6 +176,10 @@ namespace Simulator
             App.Current.Dispatcher.Invoke(() =>
             {
                 totalStock.Content = stock.ToString() + " %";
+
+                bikeStock.Content = enterprise.GetStock("bike").ToString();
+                scootStock.Content = enterprise.GetStock("scooter").ToString();
+                carStock.Content = enterprise.GetStock("car").ToString();
             });
         }
 
@@ -214,23 +196,17 @@ namespace Simulator
             App.Current.Dispatcher.Invoke(() =>
             {
                 employees.Content = free.ToString() + "/" + total.ToString();
+
+                bikesProd.Content = enterprise.GetProduction("bike").ToString();
+                scootsProd.Content = enterprise.GetProduction("scooter").ToString();
+                carsProd.Content = enterprise.GetProduction("car").ToString();
             });
         }
 
         public void ClientNeedsChange(string type, int need)
         {
-            enterprise.InitNeeds(type, need);
-
             App.Current.Dispatcher.Invoke(() =>
             {
-                bikesProd.Content = enterprise.GetProduction("bike").ToString();
-                scootsProd.Content = enterprise.GetProduction("scooter").ToString();
-                carsProd.Content = enterprise.GetProduction("car").ToString();
-
-                bikeStock.Content = enterprise.GetStock("bike").ToString();
-                scootStock.Content = enterprise.GetStock("scooter").ToString();
-                carStock.Content = enterprise.GetStock("car").ToString();
-
                 bikeAsk.Content = enterprise.GetAskClients("bike").ToString();
                 scootAsk.Content = enterprise.GetAskClients("scooter").ToString();
                 carAsk.Content = enterprise.GetAskClients("car").ToString();

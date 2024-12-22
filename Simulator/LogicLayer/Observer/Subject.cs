@@ -50,6 +50,14 @@ public class Subject
         }
     }
 
+    protected void NotifyBuyChange(string type)
+    {
+        foreach (IObserver observable in observers)
+        {
+            observable.ClientBuyChange(type);
+        }
+    }
+
     /// <summary>
     /// Registe an observer
     /// </summary>

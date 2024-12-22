@@ -53,28 +53,16 @@ namespace Simulator
         {
             Dispatcher.Invoke(() =>
             {
-                // nothing to do every week...
+                enterprise.UpdateBuying();
             });
         }
         
-
-        private void EndOfSimulation()
-        {
-            MessageBox.Show("END OF SIMULATION");
-            Close();
-        }
-
-        private void UpdateScreen()
-        {
-
-        }
 
         private void BuyMaterials(object sender, RoutedEventArgs e)
         {
             try
             {
                 enterprise.BuyMaterials();
-                UpdateScreen();
             }
             catch(LogicLayer.NotEnoughMoney)
             {
@@ -91,7 +79,6 @@ namespace Simulator
             try
             {
                 enterprise.Hire();
-                UpdateScreen();
             }
             catch (Exception x)
             {
@@ -104,7 +91,6 @@ namespace Simulator
             try
             {
                 enterprise.Dismiss();
-                UpdateScreen();
             }
             catch(LogicLayer.NoEmployee)
             {
@@ -129,7 +115,6 @@ namespace Simulator
             try
             {
                 enterprise.MakeProduct(s);
-                UpdateScreen();
             }
             catch (LogicLayer.ProductUnknown)
             {
@@ -210,6 +195,16 @@ namespace Simulator
                 bikeAsk.Content = enterprise.GetAskClients("bike").ToString();
                 scootAsk.Content = enterprise.GetAskClients("scooter").ToString();
                 carAsk.Content = enterprise.GetAskClients("car").ToString();
+            });
+        }
+
+        public void ClientBuyChange(string type)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                bikeStock.Content = enterprise.GetStock("bike").ToString();
+                scootStock.Content = enterprise.GetStock("scooter").ToString();
+                carStock.Content = enterprise.GetStock("car").ToString();
             });
         }
     }

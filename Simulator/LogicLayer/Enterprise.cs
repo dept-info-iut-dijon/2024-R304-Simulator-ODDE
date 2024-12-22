@@ -285,6 +285,9 @@ namespace LogicLayer
             ClientNeedsChange("bike", clients.GetAskFor("bike"));
             ClientNeedsChange("scooter", clients.GetAskFor("scooter"));
             ClientNeedsChange("car", clients.GetAskFor("car"));
+            ClientBuyChange("bike");
+            ClientBuyChange("scooter");
+            ClientBuyChange("car");
         }
 
         public void Dispose()
@@ -315,6 +318,11 @@ namespace LogicLayer
         public void ClientNeedsChange(string type, int need)
         {
             base.NotifyNeedsChange(type, need);
+        }
+
+        public void ClientBuyChange(string type)
+        {
+            base.NotifyBuyChange(type);
         }
         #endregion
 

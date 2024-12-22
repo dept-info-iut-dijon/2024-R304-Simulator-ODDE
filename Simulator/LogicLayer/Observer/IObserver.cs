@@ -34,5 +34,11 @@
         /// <param name="type">type of product</param>
         /// <param name="need">need of product</param>
         void ClientNeedsChange(string type, int need);
+
+        /// <summary>
+        /// change of buy's client
+        /// </summary>
+        /// <param name="type"></param>
+        void ClientBuyChange(string type);
     }
 }

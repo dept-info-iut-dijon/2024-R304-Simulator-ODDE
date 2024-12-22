@@ -17,6 +17,7 @@ public class SpyObserver : IObserver
     public int FreeEmployees { get => freeEmployees; }
     public int TotalEmployees { get => totalEmployees; }
 
+
     public SpyObserver()
     {
         money = 0;
@@ -45,5 +46,9 @@ public class SpyObserver : IObserver
     {
         freeEmployees = free;
         totalEmployees = total;
+    }
+
+    public void ClientNeedsChange(string type, int need)
+    {
     }
 }

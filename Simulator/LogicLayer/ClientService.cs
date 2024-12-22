@@ -115,5 +115,9 @@ namespace LogicLayer
         {
             base.NotifyNeedsChange(type, need);
         }
+
+        public void ClientBuyChange(string type)
+        {
+        }
     }
 }

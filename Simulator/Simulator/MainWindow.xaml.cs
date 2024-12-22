@@ -89,18 +89,6 @@ namespace Simulator
         {
             enterprise.UpdateProductions();
             enterprise.UpdateBuying();
-            
-            bikesProd.Content = enterprise.GetProduction("bike").ToString();
-            scootsProd.Content = enterprise.GetProduction("scooter").ToString();
-            carsProd.Content = enterprise.GetProduction("car").ToString();
-
-            bikeStock.Content = enterprise.GetStock("bike").ToString();
-            scootStock.Content = enterprise.GetStock("scooter").ToString();
-            carStock.Content = enterprise.GetStock("car").ToString();
-
-            bikeAsk.Content = enterprise.GetAskClients("bike").ToString();
-            scootAsk.Content = enterprise.GetAskClients("scooter").ToString();
-            carAsk.Content = enterprise.GetAskClients("car").ToString();
         }
 
         private void BuyMaterials(object sender, RoutedEventArgs e)
@@ -226,6 +214,26 @@ namespace Simulator
             App.Current.Dispatcher.Invoke(() =>
             {
                 employees.Content = free.ToString() + "/" + total.ToString();
+            });
+        }
+
+        public void ClientNeedsChange(string type, int need)
+        {
+            enterprise.InitNeeds(type, need);
+
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                bikesProd.Content = enterprise.GetProduction("bike").ToString();
+                scootsProd.Content = enterprise.GetProduction("scooter").ToString();
+                carsProd.Content = enterprise.GetProduction("car").ToString();
+
+                bikeStock.Content = enterprise.GetStock("bike").ToString();
+                scootStock.Content = enterprise.GetStock("scooter").ToString();
+                carStock.Content = enterprise.GetStock("car").ToString();
+
+                bikeAsk.Content = enterprise.GetAskClients("bike").ToString();
+                scootAsk.Content = enterprise.GetAskClients("scooter").ToString();
+                carAsk.Content = enterprise.GetAskClients("car").ToString();
             });
         }
     }

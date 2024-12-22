@@ -42,6 +42,14 @@ public class Subject
         }
     }
 
+    protected void NotifyNeedsChange(string type, int need)
+    {
+        foreach (IObserver observable in observers)
+        {
+            observable.ClientNeedsChange(type, need);
+        }
+    }
+
     /// <summary>
     /// Registe an observer
     /// </summary>

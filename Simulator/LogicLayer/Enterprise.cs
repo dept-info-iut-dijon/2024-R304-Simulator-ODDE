@@ -258,6 +258,16 @@ namespace LogicLayer
         }
 
         /// <summary>
+        /// Init the need of product
+        /// </summary>
+        /// <param name="type">product</param>
+        /// <param name="need">need od product</param>
+        public void InitNeeds(string type, int need)
+        {
+            clients.InitNeeds(type, need);
+        }
+
+        /// <summary>
         /// Get clients needs
         /// </summary>
         /// <param name="type">type of product clients wanted</param>

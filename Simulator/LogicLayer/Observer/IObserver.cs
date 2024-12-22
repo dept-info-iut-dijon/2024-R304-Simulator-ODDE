@@ -27,5 +27,12 @@
         /// <param name="free">number of employees free</param>
         /// <param name="total">number of employees total</param>
         void EmployeesChange(int free, int total);
+
+        /// <summary>
+        /// change of client's needs
+        /// </summary>
+        /// <param name="type">type of product</param>
+        /// <param name="need">need of product</param>
+        void ClientNeedsChange(string type, int need);
     }
 }

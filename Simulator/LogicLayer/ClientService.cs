@@ -119,5 +119,13 @@ namespace LogicLayer
         public void ClientBuyChange(string type)
         {
         }
+
+        public void ProductionDone(Product productDone)
+        {
+        }
+
+        public void ProductStart(Product product)
+        {
+        }
     }
 }

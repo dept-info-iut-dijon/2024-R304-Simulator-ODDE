@@ -165,9 +165,9 @@ namespace LogicLayer
                 throw new NoEmployee();
 
             materials -= p.MaterialsNeeded; // consume materials
-            Notify();
             // start the building...
-            workshop.StartProduction(p);
+            workshop.StartProduction(p, this);
+            Notify(productStarted : p);
         }
 
         /// <summary>
@@ -181,10 +181,8 @@ namespace LogicLayer
             // add finish products in stock
             foreach(var product in list)
             {
-                stock.Add(product);
-                workshop.Remove(product);
+                Notify(productDone : product);
             }
-            Notify();
         }
 
         /// <summary>
@@ -276,7 +274,7 @@ namespace LogicLayer
             UpdateClients();
         }
 
-        private void Notify()
+        private void Notify(Product? productStarted = null, Product? productDone = null)
         {
             MoneyChange(money);
             StockChange(stock.TotalStock);
@@ -288,6 +286,8 @@ namespace LogicLayer
             ClientBuyChange("bike");
             ClientBuyChange("scooter");
             ClientBuyChange("car");
+            if (productStarted != null) ProductStart(productStarted);
+            if (productDone != null) ProductionDone(productDone);
         }
 
         public void Dispose()
@@ -324,6 +324,19 @@ namespace LogicLayer
         {
             base.NotifyBuyChange(type);
         }
+
+        public void ProductionDone(Product productDone)
+        {
+            stock.Add(productDone);
+            workshop.Remove(productDone);
+            base.NotifyProductionDone(productDone);
+        }
+       
+        public void ProductStart(Product product)
+        {
+            base.NotifyProductionStart(product);
+        }
+
         #endregion
 
 

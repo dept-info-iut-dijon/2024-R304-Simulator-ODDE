@@ -9,6 +9,7 @@ public class SpyObserver : IObserver
     private int material;
     private int freeEmployees;
     private int totalEmployees;
+    private List<Product> products;
 
 
     public int Money { get => money; }
@@ -16,6 +17,7 @@ public class SpyObserver : IObserver
     public int Material { get => material; }
     public int FreeEmployees { get => freeEmployees; }
     public int TotalEmployees { get => totalEmployees; }
+    public List<Product> Products { get => products; }
 
 
     public SpyObserver()
@@ -25,6 +27,7 @@ public class SpyObserver : IObserver
         material = 0;
         freeEmployees = 0;
         totalEmployees = 0;
+        products = new List<Product>();
     }
 
     public void MoneyChange(int money)
@@ -50,5 +53,20 @@ public class SpyObserver : IObserver
 
     public void ClientNeedsChange(string type, int need)
     {
+    }
+
+    public void ClientBuyChange(string type)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void ProductionDone(Product productDone)
+    {
+        products.Remove(productDone);
+    }
+
+    public void ProductStart(Product product)
+    {
+        products.Add(product);
     }
 }

@@ -40,5 +40,17 @@
         /// </summary>
         /// <param name="type"></param>
         void ClientBuyChange(string type);
+
+        /// <summary>
+        /// when a production is done 
+        /// </summary>
+        /// <param name="productDone">product done</param>
+        void ProductionDone(Product productDone);
+
+        /// <summary>
+        /// product's start 
+        /// </summary>
+        /// <param name="product">production started</param>
+        void ProductStart(Product product);
     }
 }

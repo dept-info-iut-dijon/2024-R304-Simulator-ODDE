@@ -58,6 +58,22 @@ public class Subject
         }
     }
 
+    protected void NotifyProductionDone(Product product)
+    {
+        foreach (IObserver observable in observers)
+        {
+            observable.ProductionDone(product);
+        }
+    }
+
+    protected void NotifyProductionStart(Product product)
+    {
+        foreach (IObserver observable in observers)
+        {
+            observable.ProductStart(product);
+        }
+    }
+
     /// <summary>
     /// Registe an observer
     /// </summary>

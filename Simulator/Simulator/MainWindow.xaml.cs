@@ -1,4 +1,5 @@
-﻿using LogicLayer.Observer;
+﻿using LogicLayer;
+using LogicLayer.Observer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,38 +24,12 @@ namespace Simulator
     public partial class MainWindow : Window, IObserver
     {
         private LogicLayer.Enterprise enterprise;
-        private Timer timerSecond;
-        //private Timer timerMonth;
-        private Timer timerWeek;
         public MainWindow()
         {
             InitializeComponent();
             enterprise = new LogicLayer.Enterprise();
             DataContext = enterprise;
-            timerSecond = new Timer(TimerSecondTick);
-            timerSecond.Change(0, enterprise.TimeSlice); 
-            timerWeek = new Timer(TimerWeekTick);
-            timerWeek.Change(0, enterprise.WeekTime);
             enterprise.Register(this);
-        }
-
-        private void TimerSecondTick(object? data)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                // every second, to update screen
-                enterprise.UpdateProductions();
-                enterprise.UpdateBuying();
-            });
-            
-        }
-
-        private void TimerWeekTick(object? data)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                enterprise.UpdateBuying();
-            });
         }
         
 
@@ -163,7 +138,7 @@ namespace Simulator
                 totalStock.Content = stock.ToString() + " %";
 
                 bikeStock.Content = enterprise.GetStock("bike").ToString();
-                scootStock.Content = enterprise.GetStock("scooter").ToString();
+                scooterStock.Content = enterprise.GetStock("scooter").ToString();
                 carStock.Content = enterprise.GetStock("car").ToString();
             });
         }
@@ -181,10 +156,6 @@ namespace Simulator
             App.Current.Dispatcher.Invoke(() =>
             {
                 employees.Content = free.ToString() + "/" + total.ToString();
-
-                bikesProd.Content = enterprise.GetProduction("bike").ToString();
-                scootsProd.Content = enterprise.GetProduction("scooter").ToString();
-                carsProd.Content = enterprise.GetProduction("car").ToString();
             });
         }
 
@@ -192,9 +163,8 @@ namespace Simulator
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                bikeAsk.Content = enterprise.GetAskClients("bike").ToString();
-                scootAsk.Content = enterprise.GetAskClients("scooter").ToString();
-                carAsk.Content = enterprise.GetAskClients("car").ToString();
+                bikeAsk.Content = enterprise.GetAskClients(type).ToString();
+
             });
         }
 
@@ -202,9 +172,29 @@ namespace Simulator
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                bikeStock.Content = enterprise.GetStock("bike").ToString();
-                scootStock.Content = enterprise.GetStock("scooter").ToString();
-                carStock.Content = enterprise.GetStock("car").ToString();
+                bikeStock.Content = enterprise.GetStock(type).ToString();
+            });
+        }
+
+        public void ProductionDone(Product productDone)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                // recupere le label en fonction du nom du produit
+                System.Reflection.FieldInfo l = this.GetType().GetField(productDone.Name + "Stock", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                Label label = l.GetValue(this) as Label;
+                label.Content = enterprise.GetProduction(productDone.Name).ToString();
+            });
+        }
+
+        public void ProductStart(Product product)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                // recupere le label en fonction du nom du produit
+                System.Reflection.FieldInfo l = this.GetType().GetField(product.Name + "sProd", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                Label label = l.GetValue(this) as Label;
+                label.Content = enterprise.GetProduction(product.Name).ToString();
             });
         }
     }

@@ -91,7 +91,7 @@
                                 <Border BorderBrush="Black" BorderThickness="1" Margin="2" >
                                     <StackPanel >
                                         <Image Source="Images/scooter.png" Width="40" />
-                                        <Label x:Name="scootsProd" Content="0" Style="{StaticResource legend}" />
+                                        <Label x:Name="scootersProd" Content="0" Style="{StaticResource legend}" />
                                     </StackPanel>
                                 </Border>
                                 <Border BorderBrush="Black" BorderThickness="1" Margin="2" >
@@ -116,7 +116,7 @@
                                 <Border BorderBrush="Black" BorderThickness="1" Margin="2" >
                                     <StackPanel >
                                         <Image Source="Images/scooter.png" Width="40" />
-                                        <Label x:Name="scootStock" Content="0" Style="{StaticResource legend}" />
+                                        <Label x:Name="scooterStock" Content="0" Style="{StaticResource legend}" />
                                     </StackPanel>
                                 </Border>
                                 <Border BorderBrush="Black" BorderThickness="1" Margin="2" >
@@ -142,7 +142,7 @@
                                 <Border BorderBrush="Black" BorderThickness="1" Margin="2"  >
                                     <StackPanel >
                                         <Image Source="Images/scooter.png" Width="40" />
-                                        <Label x:Name="scootAsk" Content="0" Style="{StaticResource legend}" />
+                                        <Label x:Name="scooterAsk" Content="0" Style="{StaticResource legend}" />
                                     </StackPanel>
                                 </Border>
                                 <Border BorderBrush="Black" BorderThickness="1" Margin="2" HorizontalAlignment="Center" >

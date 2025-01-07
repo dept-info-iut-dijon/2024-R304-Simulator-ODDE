@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LogicLayer;
+using LogicLayer.Observer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,100 +21,23 @@ namespace Simulator
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IObserver
     {
         private LogicLayer.Enterprise enterprise;
-        private Timer timerSecond;
-        private Timer timerMonth;
-        private Timer timerWeek;
         public MainWindow()
         {
             InitializeComponent();
             enterprise = new LogicLayer.Enterprise();
             DataContext = enterprise;
-            timerSecond = new Timer(TimerSecondTick);
-            timerSecond.Change(0, enterprise.TimeSlice); 
-            timerMonth = new Timer(TimerMonthTick);
-            timerMonth.Change(0, enterprise.MonthTime);
-            timerWeek = new Timer(TimerWeekTick);
-            timerWeek.Change(0, enterprise.WeekTime);
+            enterprise.Register(this);
         }
-
-        private void TimerSecondTick(object? data)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                // every second, to update screen
-                UpdateScreen();
-            });
-            
-        }
-
-        private void TimerWeekTick(object? data)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                // nothing to do every week...
-            });
-        }
-
-        private void TimerMonthTick(object? data)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                try
-                {
-                    enterprise.PayEmployees();
-                    enterprise.UpdateClients();
-                }
-                catch (LogicLayer.NotEnoughMoney)
-                {
-                    timerSecond.Dispose();
-                    timerMonth.Dispose();
-
-                    MessageBox.Show("Not enough money to pay employees !");
-                    EndOfSimulation();
-                }
-            });
-            
-            
-        }
-
-        private void EndOfSimulation()
-        {
-            MessageBox.Show("END OF SIMULATION");
-            Close();
-        }
-
-        private void UpdateScreen()
-        {
-            enterprise.UpdateProductions();
-            enterprise.UpdateBuying();
-            
-            totalStock.Content = enterprise.TotalStock.ToString()+" %";
-            materials.Content = enterprise.Materials.ToString();
-            employees.Content = enterprise.FreeEmployees.ToString()+"/"+enterprise.Employees.ToString();
-            money.Content = enterprise.Money.ToString("C");
-
-            bikesProd.Content = enterprise.GetProduction("bike").ToString();
-            scootsProd.Content = enterprise.GetProduction("scooter").ToString();
-            carsProd.Content = enterprise.GetProduction("car").ToString();
-
-            bikeStock.Content = enterprise.GetStock("bike").ToString();
-            scootStock.Content = enterprise.GetStock("scooter").ToString();
-            carStock.Content = enterprise.GetStock("car").ToString();
-
-            bikeAsk.Content = enterprise.GetAskClients("bike").ToString();
-            scootAsk.Content = enterprise.GetAskClients("scooter").ToString();
-            carAsk.Content = enterprise.GetAskClients("car").ToString();
-        }
+        
 
         private void BuyMaterials(object sender, RoutedEventArgs e)
         {
             try
             {
                 enterprise.BuyMaterials();
-                UpdateScreen();
             }
             catch(LogicLayer.NotEnoughMoney)
             {
@@ -129,7 +54,6 @@ namespace Simulator
             try
             {
                 enterprise.Hire();
-                UpdateScreen();
             }
             catch (Exception x)
             {
@@ -142,7 +66,6 @@ namespace Simulator
             try
             {
                 enterprise.Dismiss();
-                UpdateScreen();
             }
             catch(LogicLayer.NoEmployee)
             {
@@ -167,7 +90,6 @@ namespace Simulator
             try
             {
                 enterprise.MakeProduct(s);
-                UpdateScreen();
             }
             catch (LogicLayer.ProductUnknown)
             {
@@ -199,6 +121,86 @@ namespace Simulator
         private void BuildCar(object sender, RoutedEventArgs e)
         {
             BuildProduct("car");
+        }
+
+        public void MoneyChange(int money)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                this.money.Content = money.ToString("C");
+            });
+        }
+
+        public void StockChange(int stock)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                totalStock.Content = stock.ToString() + " %";
+
+                bikeStock.Content = enterprise.GetStock("bike").ToString();
+                scooterStock.Content = enterprise.GetStock("scooter").ToString();
+                carStock.Content = enterprise.GetStock("car").ToString();
+            });
+        }
+
+        public void MaterialChange(int material)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                materials.Content = material.ToString();
+            });
+        }
+
+        public void EmployeesChange(int free, int total)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                employees.Content = free.ToString() + "/" + total.ToString();
+            });
+        }
+
+        public void ClientNeedsChange(string type, int need)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                Label label = getLabel(type + "Ask");
+                label.Content = enterprise.GetAskClients(type).ToString();
+            });
+        }
+
+        public void ClientBuyChange(string type)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                Label label = getLabel(type + "Stock");
+                label.Content = enterprise.GetStock(type).ToString();
+            });
+        }
+
+        public void ProductionDone(Product productDone)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                // recupere le label en fonction du nom du produit
+                Label label = getLabel(productDone.Name + "sProd");
+                label.Content = enterprise.GetProduction(productDone.Name).ToString();
+            });
+        }
+
+        public void ProductStart(Product product)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                // recupere le label en fonction du nom du produit
+                Label label = getLabel(product.Name + "sProd");
+                label.Content = enterprise.GetProduction(product.Name).ToString();
+            });
+        }
+
+        private Label getLabel(string name)
+        {
+            System.Reflection.FieldInfo l = this.GetType().GetField(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            return l.GetValue(this) as Label;
         }
     }
 }

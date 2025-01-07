@@ -1,9 +1,12 @@
-﻿namespace LogicLayer
+﻿using LogicLayer.Observer;
+using System.Diagnostics;
+
+namespace LogicLayer
 {
     /// <summary>
     /// Enterprise simulation
     /// </summary>
-    public class Enterprise
+    public class Enterprise : Subject, IDisposable, IObserver
     {
         #region associations
         private Workshop workshop;
@@ -68,6 +71,12 @@
         /// </summary>
         public Factory Factory { get => factory; }
         private Factory factory;
+
+        /// <summary>
+        /// Get the timer
+        /// </summary>
+        public System.Threading.Timer Timer { get => Timer; }
+        private System.Threading.Timer timer;
         #endregion
 
         #region Constructors
@@ -75,7 +84,7 @@
         /// <summary>
         /// Initialize the enterprise
         /// </summary>
-        public Enterprise(Parameters? parameters = null)
+        public Enterprise(Parameters? parameters = null) : base()
         {
             if(parameters == null)
                 parameters = new Parameters();
@@ -86,9 +95,13 @@
             workshop = new Workshop(parameters.TimeSlice);
             stock = new Stock(parameters.MaxStock);
             clients = new ClientService();
+            clients.Register(this);
             Initializer.InitClient(clients);
             factory = new Factory();
             Initializer.InitFactory(factory);
+            timer = new Timer(EndOfMonth);
+            timer.Change(0, MonthTime);
+            Notify();
         }
         #endregion
 
@@ -104,6 +117,7 @@
                 throw new NotEnoughMoney();
             money -= cost;
             materials += parameters.Materials;
+            Notify();
         }
 
         /// <summary>
@@ -112,6 +126,7 @@
         public void Hire()
         {
             ++employees;
+            Notify();
         }
 
         /// <summary>
@@ -130,6 +145,7 @@
                 throw new EmployeeWorking();
             money -= cost;
             employees--;
+            Notify();
         }
 
         /// <summary>
@@ -150,7 +166,8 @@
 
             materials -= p.MaterialsNeeded; // consume materials
             // start the building...
-            workshop.StartProduction(p);
+            workshop.StartProduction(p, this);
+            Notify(productStarted : p);
         }
 
         /// <summary>
@@ -164,10 +181,8 @@
             // add finish products in stock
             foreach(var product in list)
             {
-                stock.Add(product);
-                workshop.Remove(product);
+                Notify(productDone : product);
             }
-
         }
 
         /// <summary>
@@ -200,6 +215,7 @@
             if (cost > money)
                 throw new NotEnoughMoney();
             money -= cost;
+            Notify();
         }
 
         /// <summary>
@@ -229,6 +245,7 @@
                 stock.Remove(p);
                 money += p.Price;
                 clients.Buy(type);
+                Notify();
             }
         }
 
@@ -239,7 +256,7 @@
         {            
             clients.UpdateClients();
         }
-
+        
         /// <summary>
         /// Get clients needs
         /// </summary>
@@ -250,6 +267,76 @@
         {
             return clients.GetAskFor(type);
         }
+
+        private void EndOfMonth(object? state)
+        {
+            PayEmployees();
+            UpdateClients();
+        }
+
+        private void Notify(Product? productStarted = null, Product? productDone = null)
+        {
+            MoneyChange(money);
+            StockChange(stock.TotalStock);
+            MaterialChange(materials);
+            EmployeesChange(FreeEmployees, employees);
+            ClientNeedsChange("bike", clients.GetAskFor("bike"));
+            ClientNeedsChange("scooter", clients.GetAskFor("scooter"));
+            ClientNeedsChange("car", clients.GetAskFor("car"));
+            ClientBuyChange("bike");
+            ClientBuyChange("scooter");
+            ClientBuyChange("car");
+            if (productStarted != null) ProductStart(productStarted);
+            if (productDone != null) ProductionDone(productDone);
+        }
+
+        public void Dispose()
+        {
+            timer.Dispose();
+        }
+
+        public void MoneyChange(int money)
+        {
+            base.NotifyMoneyChange(money);
+        }
+
+        public void StockChange(int stock)
+        {
+            base.NotifyStockChange(stock);
+        }
+
+        public void MaterialChange(int material)
+        {
+            base.NotifyMaterialChange(material);
+        }
+
+        public void EmployeesChange(int free, int total)
+        {
+            base.NotifyEmployeesChange(FreeEmployees, employees);
+        }
+
+        public void ClientNeedsChange(string type, int need)
+        {
+            base.NotifyNeedsChange(type, need);
+        }
+
+        public void ClientBuyChange(string type)
+        {
+            base.NotifyBuyChange(type);
+        }
+
+        public void ProductionDone(Product productDone)
+        {
+            stock.Add(productDone);
+            workshop.Remove(productDone);
+            base.NotifyProductionDone(productDone);
+        }
+       
+        public void ProductStart(Product product)
+        {
+            base.NotifyProductionStart(product);
+        }
+
         #endregion
 
 

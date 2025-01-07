@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LogicLayer.Observer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace LogicLayer
     /// <summary>
     /// Part of company, who deal with clients needs
     /// </summary>
-    public class ClientService
+    public class ClientService : Subject, IObserver
     {
         private Random r;
         private Dictionary<string, int> needs;
@@ -23,13 +24,14 @@ namespace LogicLayer
         }
 
         /// <summary>
-        /// Init the need of product
+        /// Init the need of product    
         /// </summary>
         /// <param name="type">product</param>
         /// <param name="need">need od product</param>
         public void InitNeeds(string type, int need)
         {
             needs[type] = need;
+            NotifyNeedsChange(type, need);
         }
 
         /// <summary>
@@ -49,8 +51,11 @@ namespace LogicLayer
         {
             // the values are the probability new clients want a type...
             needs["bike"] += ProbaToClients(20);
+            ClientNeedsChange("bike", needs["bike"]);
             needs["scooter"] += ProbaToClients(14);
+            ClientNeedsChange("scooter", needs["scooter"]);
             needs["car"] += ProbaToClients(10);
+            ClientNeedsChange("car", needs["car"]);
         }
         /// <summary>
         /// Get clients needs
@@ -87,6 +92,40 @@ namespace LogicLayer
         {
             needs[type] -= 10;
             if (needs[type] < 0) needs[type] = 0;
+            ClientNeedsChange(type, needs[type]);
+        }
+
+        public void MoneyChange(int money)
+        {
+        }
+
+        public void StockChange(int stock)
+        {
+        }
+
+        public void MaterialChange(int material)
+        {
+        }
+
+        public void EmployeesChange(int free, int total)
+        {
+        }
+
+        public void ClientNeedsChange(string type, int need)
+        {
+            base.NotifyNeedsChange(type, need);
+        }
+
+        public void ClientBuyChange(string type)
+        {
+        }
+
+        public void ProductionDone(Product productDone)
+        {
+        }
+
+        public void ProductStart(Product product)
+        {
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LogicLayer.Observer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace LogicLayer
     /// <summary>
     /// A production of the workshop
     /// </summary>
-    internal class Production
+    public class Production : Subject
     {
         private Product product;
         private bool done;
@@ -21,6 +22,7 @@ namespace LogicLayer
         public Production(Product product, int time_slice)
         {
             this.product = product;
+            base.NotifyProductionStart(product);
             done=false;
             Timer timer = new Timer(ProdDone);
             timer.Change(product.TimeToBuild*time_slice, Timeout.Infinite);
@@ -29,6 +31,7 @@ namespace LogicLayer
         private void ProdDone(object? state)
         {
             done = true;
+            base.NotifyProductionDone(product);
         }
 
         /// <summary>

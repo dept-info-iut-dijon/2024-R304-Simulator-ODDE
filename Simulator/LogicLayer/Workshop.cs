@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LogicLayer.Observer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,10 +33,13 @@ namespace LogicLayer
         /// Start the production of a product
         /// </summary>
         /// <param name="p">the product</param>
-        public void StartProduction(Product p)
+        /// <param name="obs">subscribe product to observer</param>
+        public void StartProduction(Product p, IObserver? obs)
         {
             nbEmployees += p.EmployeesNeeded;
-            productions.Add(new Production(p,timeSlice));
+            Production production = new(p, timeSlice);
+            productions.Add(production);
+            if (obs != null) production.Register(obs);
         }
 
         /// <summary>

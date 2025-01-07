@@ -163,8 +163,8 @@ namespace Simulator
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                bikeAsk.Content = enterprise.GetAskClients(type).ToString();
-
+                Label label = getLabel(type + "Ask");
+                label.Content = enterprise.GetAskClients(type).ToString();
             });
         }
 
@@ -172,7 +172,8 @@ namespace Simulator
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                bikeStock.Content = enterprise.GetStock(type).ToString();
+                Label label = getLabel(type + "Stock");
+                label.Content = enterprise.GetStock(type).ToString();
             });
         }
 
@@ -181,8 +182,7 @@ namespace Simulator
             App.Current.Dispatcher.Invoke(() =>
             {
                 // recupere le label en fonction du nom du produit
-                System.Reflection.FieldInfo l = this.GetType().GetField(productDone.Name + "Stock", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                Label label = l.GetValue(this) as Label;
+                Label label = getLabel(productDone.Name + "sProd");
                 label.Content = enterprise.GetProduction(productDone.Name).ToString();
             });
         }
@@ -192,10 +192,15 @@ namespace Simulator
             App.Current.Dispatcher.Invoke(() =>
             {
                 // recupere le label en fonction du nom du produit
-                System.Reflection.FieldInfo l = this.GetType().GetField(product.Name + "sProd", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                Label label = l.GetValue(this) as Label;
+                Label label = getLabel(product.Name + "sProd");
                 label.Content = enterprise.GetProduction(product.Name).ToString();
             });
+        }
+
+        private Label getLabel(string name)
+        {
+            System.Reflection.FieldInfo l = this.GetType().GetField(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            return l.GetValue(this) as Label;
         }
     }
 }

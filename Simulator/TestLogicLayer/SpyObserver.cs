@@ -57,7 +57,7 @@ public class SpyObserver : IObserver
 
     public void ClientBuyChange(string type)
     {
-        throw new NotImplementedException();
+       
     }
 
     public void ProductionDone(Product productDone)
